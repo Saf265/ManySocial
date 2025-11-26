@@ -1,0 +1,28 @@
+import { NextResponse } from "next/server";
+
+export async function POST(request) {
+  const { model, prompt, width, height } = await request.json();
+
+  const response = await fetch('https://api.aimlapi.com/v1/images/generations', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.AI_ML_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: model,
+      prompt: prompt,
+      image_size: { width: width, height: height },
+      num_inference_steps: 8,
+      num_images: 4,
+      // seed: 12345,
+      // enable_safety_checker: true
+    })
+  });
+
+  const data = await response.json();
+  console.log("first", data);
+  console.log("second", data.data)
+
+  return NextResponse.json({ url: data.data }, { status: 200 });
+}

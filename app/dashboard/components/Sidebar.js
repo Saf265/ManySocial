@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Home", href: "/dashboard/home", icon: Home },
   { name: "Assets", href: "/dashboard/assets", icon: FolderOpen },
   { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
   { name: "Tools", href: "/dashboard/tools", icon: Wrench },
@@ -40,7 +40,7 @@ export default function Sidebar() {
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href);
 
             return (
               <li key={item.href}>
