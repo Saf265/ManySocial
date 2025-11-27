@@ -37,8 +37,44 @@ export default function GenerateImagePage() {
   const [model, setModel] = useState("flux/schnell");
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   const router = useRouter();
+
+  const handleEnhancePrompt = async () => {
+    if (!prompt.trim() || isEnhancing) return;
+
+    const originalPrompt = prompt;
+    setIsEnhancing(true);
+    setPrompt(""); // Clear current prompt
+
+    try {
+      const { enhancePrompt } = await import("@/features/images/server/action-images");
+
+      // Get the full enhanced text
+      const enhancedText = await enhancePrompt(originalPrompt);
+
+      // Simulate streaming effect
+      let currentIndex = 0;
+      const streamInterval = setInterval(() => {
+        if (currentIndex < enhancedText.length) {
+          const chunkSize = Math.floor(Math.random() * 3) + 2; // Random 2-4 chars
+          currentIndex += chunkSize;
+          setPrompt(enhancedText.slice(0, currentIndex));
+        } else {
+          setPrompt(enhancedText);
+          clearInterval(streamInterval);
+          setIsEnhancing(false);
+        }
+      }, 30); // 30ms between chunks
+
+    } catch (error) {
+      console.error('Error enhancing prompt:', error);
+      toast.error("Erreur lors de l'amélioration du prompt");
+      setPrompt(originalPrompt); // Restore original on error
+      setIsEnhancing(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -156,13 +192,14 @@ export default function GenerateImagePage() {
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-end">
                   <button
                     type="button"
-                    disabled={!prompt.trim()}
-                    className={`text-xs font-medium cursor-pointer px-3 py-1.5 rounded-md transition-colors ${prompt.trim()
+                    onClick={handleEnhancePrompt}
+                    disabled={!prompt.trim() || isEnhancing}
+                    className={`text-xs font-medium cursor-pointer px-3 py-1.5 rounded-md transition-colors ${prompt.trim() && !isEnhancing
                       ? "bg-purple-100 text-purple-700 hover:bg-purple-200"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                       }`}
                   >
-                    Enhance Prompt
+                    {isEnhancing ? "Amélioration..." : "Enhance Prompt"}
                   </button>
 
                 </div>
