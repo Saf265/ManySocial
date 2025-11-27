@@ -73,20 +73,44 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const ImagesGenerated = pgTable(
+  "images_generated",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    prompt: text("prompt").notNull(),
+    images: text("images").array().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("images_generated_userId_idx").on(table.userId)],
+);
+
+export const imagesGeneratedRelations = relations(ImagesGenerated, ({ one }) => ({
+  user: one(users, {
+    fields: [ImagesGenerated.userId],
+    references: [users.id],
+  }),
+}));
+
+
+export const userRelations = relations(users, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [session.userId],
     references: [users.id],
   }),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [account.userId],
     references: [users.id],
   }),

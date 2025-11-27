@@ -1,3 +1,6 @@
+import { db } from "@/db/drizzle";
+import { ImagesGenerated } from "@/db/drizzle/schema";
+import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -24,5 +27,17 @@ export async function POST(request) {
   console.log("first", data);
   console.log("second", data.data)
 
-  return NextResponse.json({ url: data.data }, { status: 200 });
+  const randomId = nanoid();
+
+  // Extract image URLs from the response
+  const imageUrls = data.data.map(img => img.url);
+
+  const [newImagesGenerated] = await db.insert(ImagesGenerated).values({
+    id: randomId,
+    userId: "temp-user-id", // TODO: Get from session
+    prompt: prompt,
+    images: imageUrls
+  }).returning();
+
+  return NextResponse.json({ id: newImagesGenerated.id }, { status: 200 });
 }
