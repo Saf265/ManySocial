@@ -89,6 +89,30 @@ export const ImagesGenerated = pgTable(
   (table) => [index("images_generated_userId_idx").on(table.userId)],
 );
 
+export const VoicesGenerated = pgTable(
+  "voices_generated",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    title: text("title").notNull(),
+    text: text("text").notNull(),
+    audioURL: text("audio").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("voices_generated_userId_idx").on(table.userId)],
+);
+
+export const voices_generatedRelations = relations(VoicesGenerated, ({ one }) => ({
+  user: one(users, {
+    fields: [VoicesGenerated.userId],
+    references: [users.id],
+  }),
+}));
+
 export const imagesGeneratedRelations = relations(ImagesGenerated, ({ one }) => ({
   user: one(users, {
     fields: [ImagesGenerated.userId],
