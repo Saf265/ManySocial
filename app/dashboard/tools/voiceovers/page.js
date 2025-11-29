@@ -1,11 +1,44 @@
 "use client";
 
 import { ChevronDown, Heart, Mic, Play, Search, Settings, User, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAudioPlayer } from "react-use-audio-player";
 
 
+const voices = [
+  { name: "Zephyr", gender: "Female", description: "Bright, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357160/Zephyr_eg9cfn.wav" },
+  { name: "Puck", gender: "Male", description: "Upbeat, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357157/Puck_mcncoc.wav" },
+  { name: "Charon", gender: "Male", description: "Informative, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357156/Charon_r2cgxn.wav" },
+  { name: "Kore", gender: "Female", description: "Firm, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357156/Kore_ueryyo.wav" },
+  { name: "Fenrir", gender: "Male", description: "Excitable, Lower middle", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357153/Fenrir_ttsyfe.wav" },
+  { name: "Leda", gender: "Female", description: "Youthful, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357151/Leda_vkmcgl.wav" },
+  { name: "Orus", gender: "Male", description: "Firm, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Orus_zur34d.wav" },
+  { name: "Aoede", gender: "Female", description: "Breezy, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Aoede_zyqwof.wav" },
+  { name: "Callirrhoe", gender: "Female", description: "Easy-going, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Callirrhoe_ybistv.wav" },
+  { name: "Autonoe", gender: "Female", description: "Bright, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357147/Autonoe_cqftiy.wav" },
+  { name: "Enceladus", gender: "Male", description: "Breathy, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357142/Enceladus_bw5t73.wav" },
+  { name: "Lapetus", gender: "Male", description: "Clear, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357143/Iapetus_kly6by.wav" },
+  { name: "Umbriel", gender: "Male", description: "Easy-going, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Umbriel_zqiovl.wav" },
+  { name: "Algieba", gender: "Male", description: "Smooth, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Algieba_odsuon.wav" },
+  { name: "Despina", gender: "Female", description: "Smooth, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Despina_uawaph.wav" },
+  { name: "Erinome", gender: "Female", description: "Clear, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357137/Erinome_lqobgj.wav" },
+  { name: "Algenib", gender: "Male", description: "Gravelly, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357136/Algenib_uztsbp.wav" },
+  { name: "Rasalgethi", gender: "Male", description: "Informative, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357136/Rasalgethi_ryuuiv.wav" },
+  { name: "Laomedeia", gender: "Female", description: "Upbeat, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357135/Laomedeia_napji0.wav" },
+  { name: "Achernar", gender: "Female", description: "Soft, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357135/Achernar_ku8wmf.wav" },
+  { name: "Alnilam", gender: "Male", description: "Firm, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357132/Alnilam_olivhd.wav" },
+  { name: "Schedar", gender: "Male", description: "Even, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Schedar_qrdcqo.wav" },
+  { name: "Gacrux", gender: "Female", description: "Mature, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Gacrux_cdcu1f.wav" },
+  { name: "Pulcherrima", gender: "Female", description: "Forward, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Pulcherrima_kxewml.wav" },
+  { name: "Achird", gender: "Male", description: "Friendly, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Achird_lkd3xs.wav" },
+  { name: "Zubenelgenubi", gender: "Male", description: "Casual, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Zubenelgenubi_udats0.wav" },
+  { name: "Vindemiatrix", gender: "Female", description: "Gentle, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Vindemiatrix_lhfgwx.wav" },
+  { name: "Sadachbia", gender: "Male", description: "Lively, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sadachbia_qlovue.wav" },
+  { name: "Sadaltager", gender: "Male", description: "Knowledgeable, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sadaltager_yfc44s.wav" },
+  { name: "Sulafat", gender: "Female", description: "Warm, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sulafat_gb7lnj.wav" }
+];
 export default function VoiceoversPage() {
   const [title, setTitle] = useState("");
   const [script, setScript] = useState("");
@@ -20,38 +53,6 @@ export default function VoiceoversPage() {
   const [favorites, setFavorites] = useState([]);
   const { load, playing, togglePlay } = useAudioPlayer();
 
-  const voices = [
-    { name: "Zephyr", gender: "Female", description: "Bright, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357160/Zephyr_eg9cfn.wav" },
-    { name: "Puck", gender: "Male", description: "Upbeat, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357157/Puck_mcncoc.wav" },
-    { name: "Charon", gender: "Male", description: "Informative, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357156/Charon_r2cgxn.wav" },
-    { name: "Kore", gender: "Female", description: "Firm, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357156/Kore_ueryyo.wav" },
-    { name: "Fenrir", gender: "Male", description: "Excitable, Lower middle", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357153/Fenrir_ttsyfe.wav" },
-    { name: "Leda", gender: "Female", description: "Youthful, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357151/Leda_vkmcgl.wav" },
-    { name: "Orus", gender: "Male", description: "Firm, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Orus_zur34d.wav" },
-    { name: "Aoede", gender: "Female", description: "Breezy, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Aoede_zyqwof.wav" },
-    { name: "Callirrhoe", gender: "Female", description: "Easy-going, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357148/Callirrhoe_ybistv.wav" },
-    { name: "Autonoe", gender: "Female", description: "Bright, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357147/Autonoe_cqftiy.wav" },
-    { name: "Enceladus", gender: "Male", description: "Breathy, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357142/Enceladus_bw5t73.wav" },
-    { name: "Lapetus", gender: "Male", description: "Clear, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357143/Iapetus_kly6by.wav" },
-    { name: "Umbriel", gender: "Male", description: "Easy-going, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Umbriel_zqiovl.wav" },
-    { name: "Algieba", gender: "Male", description: "Smooth, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Algieba_odsuon.wav" },
-    { name: "Despina", gender: "Female", description: "Smooth, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357141/Despina_uawaph.wav" },
-    { name: "Erinome", gender: "Female", description: "Clear, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357137/Erinome_lqobgj.wav" },
-    { name: "Algenib", gender: "Male", description: "Gravelly, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357136/Algenib_uztsbp.wav" },
-    { name: "Rasalgethi", gender: "Male", description: "Informative, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357136/Rasalgethi_ryuuiv.wav" },
-    { name: "Laomedeia", gender: "Female", description: "Upbeat, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357135/Laomedeia_napji0.wav" },
-    { name: "Achernar", gender: "Female", description: "Soft, Higher pitch", tags: ["Female", "Higher pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357135/Achernar_ku8wmf.wav" },
-    { name: "Alnilam", gender: "Male", description: "Firm, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357132/Alnilam_olivhd.wav" },
-    { name: "Schedar", gender: "Male", description: "Even, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Schedar_qrdcqo.wav" },
-    { name: "Gacrux", gender: "Female", description: "Mature, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Gacrux_cdcu1f.wav" },
-    { name: "Pulcherrima", gender: "Female", description: "Forward, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Pulcherrima_kxewml.wav" },
-    { name: "Achird", gender: "Male", description: "Friendly, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Achird_lkd3xs.wav" },
-    { name: "Zubenelgenubi", gender: "Male", description: "Casual, Lower middle pitch", tags: ["Male", "Lower middle", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357131/Zubenelgenubi_udats0.wav" },
-    { name: "Vindemiatrix", gender: "Female", description: "Gentle, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Vindemiatrix_lhfgwx.wav" },
-    { name: "Sadachbia", gender: "Male", description: "Lively, Lower pitch", tags: ["Male", "Lower pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sadachbia_qlovue.wav" },
-    { name: "Sadaltager", gender: "Male", description: "Knowledgeable, Middle pitch", tags: ["Male", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sadaltager_yfc44s.wav" },
-    { name: "Sulafat", gender: "Female", description: "Warm, Middle pitch", tags: ["Female", "Middle pitch", "Multilingual"], voicePreview: "https://res.cloudinary.com/dotihphpy/video/upload/v1764357130/Sulafat_gb7lnj.wav" }
-  ];
 
   // Load favorites from sessionStorage
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function VoiceoversPage() {
       setFavorites(JSON.parse(storedFavorites));
     }
   }, []);
+  const router = useRouter()
 
   // Save favorites to sessionStorage
   const toggleFavorite = (voiceName) => {
@@ -117,19 +119,12 @@ export default function VoiceoversPage() {
 
       const data = await response.json();
 
-      if (data.success && data.audioUrl) {
-        setGeneratedVoiceovers([
-          {
-            id: Date.now(),
-            title: title,
-            audioUrl: data.audioUrl,
-            duration: data.duration || "0s"
-          },
-          ...generatedVoiceovers
-        ]);
+      if (data.success && data.id) {
+
         toast.success("Voix générée avec succès !");
         setTitle("");
         setScript("");
+        router.push(`/dashboard/tools/voiceovers/${data.id}`)
       } else {
         toast.error(data.error || "Une erreur est survenue lors de la génération.");
       }

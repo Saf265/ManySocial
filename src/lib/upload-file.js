@@ -8,7 +8,7 @@ export const uploadFile = async (file) => {
   const { url } = await put(`file-${randomId}`, file, {
     access: 'public',
     addRandomSuffix: true,
-    token: process.env.BLOB_READ_WRITE_TOKEN
+    token: process.env.BLOB_READ_WRITE_TOKEN,
   });
 
   return url;
