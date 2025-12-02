@@ -1,4 +1,5 @@
 
+
 /**
  * Extract video information from YouTube API response
  * @param {Object} data - YouTube API response data
@@ -7,22 +8,20 @@
 export const getVideoInfo = (data) => {
   try {
     // Get best quality thumbnail (largest resolution)
-    const bestThumbnail = data.thumbnail?.reduce((best, current) => {
+    const bestThumbnail = data.thumbnails?.reduce((best, current) => {
       const bestArea = (best.width || 0) * (best.height || 0);
       const currentArea = (current.width || 0) * (current.height || 0);
       return currentArea > bestArea ? current : best;
     }) || null;
 
-    // Convert keywords array to hashtag string
-    const keywordsString = data.keywords
-      ?.map((keyword) => `#${keyword.replace(/\s+/g, "")}`)
-      .join(" ") || "";
+    // Extract keywords from description or use empty string
+    const keywordsString = "";
 
     return {
       thumbnail: bestThumbnail?.url || null,
       title: data.title || "",
       keywords: keywordsString,
-      viewCount: data.viewCount || "0",
+      viewCount: data.viewCount?.toString() || "0",
     };
   } catch (error) {
     console.error("Error extracting video info:", error);
@@ -31,44 +30,34 @@ export const getVideoInfo = (data) => {
 };
 
 /**
- * Extract MP4 formats from 360p to 1080p, removing duplicates
+ * Extract MP4 formats from 360p to 1080p
  * @param {Object} data - YouTube API response data
- * @returns {Array} Array of unique MP4 formats with qualityLabel, url, and bitrate
+ * @returns {Array} Array of MP4 formats with quality, url, and size
  */
 export const getMP4Formats = (data) => {
   try {
     const targetQualities = ["360p", "480p", "720p", "1080p"];
     const qualityMap = new Map();
 
-    // Process all formats (both regular and adaptive)
-    const allFormats = [
-      ...(data.formats || []),
-      ...(data.adaptiveFormats || []),
-    ];
+    // Get videos from the new API structure
+    const videos = data.videos?.items || [];
 
-    // Filter MP4 formats and deduplicate by quality
-    allFormats.forEach((format) => {
-      const qualityLabel = format.qualityLabel || "";
-      const isMp4 = format.mimeType?.includes("video/mp4") || false;
+    // Filter MP4 formats and deduplicate by quality (keep first/best for each quality)
+    videos.forEach((video) => {
+      const quality = video.quality || "";
+      const isMp4 = video.extension === "mp4";
 
       // Only include target qualities and MP4 format
-      if (targetQualities.includes(qualityLabel) && isMp4) {
-        // Keep the format with highest bitrate for each quality
-        if (!qualityMap.has(qualityLabel)) {
-          qualityMap.set(qualityLabel, {
-            qualityLabel,
-            url: format.url,
-            bitrate: format.bitrate || 0,
+      if (targetQualities.includes(quality) && isMp4) {
+        // Keep the first (best) format for each quality
+        if (!qualityMap.has(quality)) {
+          qualityMap.set(quality, {
+            qualityLabel: quality,
+            url: video.url,
+            bitrate: 0,
+            size: video.size || 0,
+            sizeText: video.sizeText || "",
           });
-        } else {
-          const existing = qualityMap.get(qualityLabel);
-          if (format.bitrate > existing.bitrate) {
-            qualityMap.set(qualityLabel, {
-              qualityLabel,
-              url: format.url,
-              bitrate: format.bitrate || 0,
-            });
-          }
         }
       }
     });
@@ -84,7 +73,6 @@ export const getMP4Formats = (data) => {
     throw error;
   }
 };
-
 /**
  * Main function to process YouTube API response
  * @param {Object} data - YouTube API response data
@@ -94,7 +82,7 @@ export const processYoutubeData = (data) => {
   try {
     return {
       videoInfo: getVideoInfo(data),
-      formats: getMP4Formats(data),
+      mp4Formats: getMP4Formats(data),
     };
   } catch (error) {
     console.error("Error processing YouTube data:", error);
@@ -120,5 +108,9 @@ export function extractYouTubeId(url) {
 
   return null;
 }
+
+
+
+
 
 

@@ -135,7 +135,7 @@ export default function GenerateImagePage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full p-8">
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column */}

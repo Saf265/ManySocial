@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadFile } from "@/lib/upload-file";
 import { Music, Upload } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -46,8 +47,6 @@ export default function VocalRemoverPage() {
     setIsProcessing(true);
 
     try {
-      // Importer la fonction uploadFile
-      const { uploadFile } = await import("@/lib/upload-file");
 
       // Upload le fichier vers Vercel Blob
       const loadingToast = toast.loading("Upload du fichier...");
@@ -56,27 +55,28 @@ export default function VocalRemoverPage() {
 
       console.log("File uploaded to:", fileUrl);
 
-      // Envoyer l'URL du fichier à l'API
-      const response = await fetch('/api/tools/remove-vocals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fileUrl: fileUrl,
-          fileName: file.name,
-          fileType: file.type
-        }),
-      });
+      const fileName =file.name
+      const fileType = file.type 
+     const slicedType = fileType.slice(0, 5)
 
-      const data = await response.json();
+     const response = await fetch("/api/tools/enhance-vocal", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileUrl, fileType }),
+    });
 
-      if (data.success && data.audioUrl) {
-        setProcessedAudio(data.audioUrl);
-        toast.success("Voix supprimées avec succès !");
-      } else {
-        toast.error(data.error || "Une erreur est survenue lors du traitement.");
-      }
+    const data = await response.json();
+    console.log("data", data)
+
+
+      // if (slicedType === "audio") {
+      //   setProcessedAudio(data.audioUrl);
+      //   toast.success("Voix supprimées avec succès !");
+      // } else {
+      //   toast.error(data.error || "Une erreur est survenue lors du traitement.");
+      // }
     } catch (error) {
       console.error('Error removing vocals:', error);
       toast.error("Une erreur est survenue lors du traitement.");

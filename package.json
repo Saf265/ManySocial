@@ -10,16 +10,20 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@cleanvoice/cleanvoice-sdk": "^2.0.2",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@google/genai": "^1.30.0",
     "@neondatabase/serverless": "^1.0.2",
     "@react-email/components": "1.0.1",
     "@vercel/blob": "^2.0.0",
+    "apify-client": "^2.20.0",
     "better-auth": "^1.4.2",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
+    "ffmpeg-static": "^5.3.0",
     "file-saver": "^2.0.5",
     "form-data": "^4.0.5",
-    "get-video-id": "^4.1.7",
     "lucide-react": "^0.554.0",
     "nanoid": "^5.1.6",
     "next": "16.0.4",
@@ -31,7 +35,10 @@
     "resend": "^6.5.2",
     "stripe": "^20.0.0",
     "use-sound": "^5.0.0",
-    "wav": "^1.0.2"
+    "wav": "^1.0.2",
+    "youtube-dl-exec": "^3.0.27",
+    "youtubei.js": "^16.0.1",
+    "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

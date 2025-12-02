@@ -106,6 +106,29 @@ export const VoicesGenerated = pgTable(
   (table) => [index("voices_generated_userId_idx").on(table.userId)],
 );
 
+export const VocalEnhancerGenerated = pgTable(
+  "vocal_enhancer_generated",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    fileName: text("file_name").notNull(),
+    audioURL: text("audio_url").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("vocal_enhancer_generated_userId_idx").on(table.userId)],
+); 
+// relations VocalEnhancerGenerated
+export const vocalEnhancerGeneratedRelations = relations(VocalEnhancerGenerated, ({ one }) => ({
+  user: one(users, {
+    fields: [VocalEnhancerGenerated.userId],
+    references: [users.id],
+  }),
+}));
+
 export const voices_generatedRelations = relations(VoicesGenerated, ({ one }) => ({
   user: one(users, {
     fields: [VoicesGenerated.userId],

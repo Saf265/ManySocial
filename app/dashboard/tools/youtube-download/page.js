@@ -1,7 +1,7 @@
 "use client";
 
-import { handleDonwloadFormat } from "@/features/youtube-download/server/youtube-action";
 import { extractYouTubeId } from "@/utils/actions-youtube";
+import { saveAs } from "file-saver";
 import { Download } from "lucide-react";
 import { useState } from "react";
 
@@ -52,14 +52,11 @@ export default function YoutubeDownloadPage(){
         }
     };
 
-    const handleDonwloadFormats= async (url)=>{
-      console.log(url)
-      const id = await handleDonwloadFormat(url)
-      const response = await fetch(id)
+    const handleDonwloadFormat=async (url)=>{
+      const response = await fetch(url)
+      
       const blob = await response.blob()
-      const blobUrl = URL.createObjectURL(blob)
-
-      saveAs(blobUrl, "video.mp4")
+      saveAs(blob, "video.mp4")
     }
 
     return (
@@ -158,7 +155,7 @@ export default function YoutubeDownloadPage(){
                                             Ouvrir
                                         </button>
                                         <button
-                                            onClick={() => handleDonwloadFormats(format.url)}
+                                            onClick={() => handleDonwloadFormat(format.url)}
                                             className="flex items-center gap-1 text-xs px-2 py-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
                                         >
                                             <Download size={14} />
