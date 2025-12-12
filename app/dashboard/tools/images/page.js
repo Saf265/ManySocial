@@ -7,11 +7,11 @@ import toast from "react-hot-toast";
 import CustomSelect from "../../components/CustomSelect";
 
 const modelOptions = [
-  { id: 1, value: "flux/schnell", label: "Flux Schnell", info: "Very Fast" },
-  { id: 2, value: "bytedance/seedream-3.0", label: "Seedream 3", info: "High Quality" },
-  { id: 3, value: "google/imagen-4.0-fast-generate-001", label: "Google Imagen 4 Fast", info: "Fast & Balanced" },
-  { id: 4, value: "google/imagen-4.0-generate-001", label: "Google Imagen 4", info: "Premium Quality" },
-  { id: 5, value: "dall-e-3", label: "DALL·E 3", info: "Creative & Detailed" },
+  { id: 1, value: "flux/schnell", label: "Flux Schnell", info: "Très rapide" },
+  { id: 2, value: "bytedance/seedream-3.0", label: "Seedream 3", info: "Haute qualité" },
+  { id: 3, value: "google/imagen-4.0-fast-generate-001", label: "Google Imagen 4 Fast", info: "Rapide et équilibré" },
+  { id: 4, value: "google/imagen-4.0-generate-001", label: "Google Imagen 4", info: "Qualité supérieure" },
+  { id: 5, value: "dall-e-3", label: "DALL·E 3", info: "Créatif et détaillé" },
   { id: 6, value: "alibaba/qwen-image", label: "Qwen Image", info: "Efficient" }
 ];
 
@@ -144,7 +144,7 @@ export default function GenerateImagePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-2">
-                  Model
+                  Modèle
                 </label>
                 <CustomSelect
                   value={model}
@@ -155,7 +155,7 @@ export default function GenerateImagePage() {
 
               <div>
                 <label className="block text-sm text-gray-600 mb-2">
-                  Aspect Ratio
+                  Format d'image
                 </label>
                 <CustomSelect
                   value={aspectRatio}
@@ -199,14 +199,14 @@ export default function GenerateImagePage() {
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                       }`}
                   >
-                    {isEnhancing ? "Amélioration..." : "Enhance Prompt"}
+                    {isEnhancing ? "Amélioration..." : "Améliorer le prompt"}
                   </button>
 
                 </div>
               </div>
             </div>
             <p className="text-xs text-gray-400">
-              ⌘+Enter to generate
+              ⌘+Entrez pour générer
             </p>
             {/* Generate Button */}
             <button
@@ -214,13 +214,13 @@ export default function GenerateImagePage() {
               disabled={isLoading || !prompt.trim()}
               className="w-full bg-[#2563eb] text-white py-3 rounded-lg cursor-pointer font-medium hover:bg-[#1d4ed8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Génération en cours..." : "Generate Image"}
+              {isLoading ? "Génération en cours..." : "Générer une image"}
             </button>
           </div>
 
           {/* Right Column - Recent Generations */}
           <div>
-            <h3 className="text-sm text-gray-600 mb-4">Recent Generations</h3>
+            <h3 className="text-sm text-gray-600 mb-4">Générations récentes</h3>
             <div className="space-y-3">
               {/* Empty state */}
               <div className="text-center py-12 text-gray-400 text-sm">
