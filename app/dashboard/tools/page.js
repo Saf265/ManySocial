@@ -1,4 +1,5 @@
 import { Lightbulb, MessageSquare, Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AIToolsDashboard() {
@@ -27,7 +28,7 @@ export default function AIToolsDashboard() {
       title: "Générateur d'Images IA",
       description: "Générez des images de haute qualité avec l'IA en quelques secondes.",
       icon: Wand2,
-      preview: "/api/placeholder/300/200",
+      preview: "/Images-BG.svg",
       href: "/dashboard/tools/images"
     },
     {
@@ -35,7 +36,7 @@ export default function AIToolsDashboard() {
       description: "Créez des voix off de haute qualité en quelques secondes avec plus de 50 narrateurs.",
       icon: Mic,
       preview: "/api/placeholder/300/200",
-      href: "/dashboard/tools/vocal-remover"
+      href: "/dashboard/tools/voiceovers"
     },
     {
       title: "Amélioration Audio IA",
@@ -79,6 +80,13 @@ export default function AIToolsDashboard() {
       icon: MessageSquare,
       preview: "/api/placeholder/300/200",
       href: "/dashboard/tools/fake-sms"
+    },
+    {
+      title: "Vidéo Split Screen",
+      description: "Créez des vidéos split screen virales facilement.",
+      icon: Video,
+      preview: "/api/placeholder/300/200",
+      href: "/dashboard/tools/split-screen"
     }
   ];
 
@@ -112,12 +120,23 @@ export default function AIToolsDashboard() {
           {tools.map((tool, index) => (
             <div key={index} className="bg-white border border-gray-200 rounded-xl overflow-hidden ">
               {/* Preview Image */}
-              <div className="relative bg-gray-50 h-48 flex items-center justify-center p-4">
-                <div className="w-full h-full bg-white rounded border border-gray-100 flex items-center justify-center">
-                  <tool.icon className="w-12 h-12 text-gray-300" />
-                </div>
+              <div className="relative bg-gray-50 h-48 flex items-center justify-center overflow-hidden">
+                {tool.preview && !tool.preview.includes('/api/placeholder') ? (
+                  <Image
+                    src={tool.preview}
+                    alt={tool.title}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full p-4 flex items-center justify-center">
+                    <div className="w-full h-full bg-white rounded border border-gray-100 flex items-center justify-center">
+                      <tool.icon className="w-12 h-12 text-gray-300" />
+                    </div>
+                  </div>
+                )}
                 {tool.badge && (
-                  <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                  <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs font-medium px-2.5 py-1 rounded-full z-10">
                     {tool.badge}
                   </span>
                 )}

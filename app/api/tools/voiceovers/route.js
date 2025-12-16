@@ -56,7 +56,7 @@ async function createWaveBuffer(
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { title, script, voice } = body;
+    const { title, script, voice, rythme, tonalite } = body;
 
     // Validation (inchangée)
     if (!title || !title.trim() || !script || !script.trim() || !voice || !voice.trim()) {
@@ -70,10 +70,29 @@ export async function POST(request) {
       apiKey: process.env.GEN_AI_KEY
     });
 
+    // Determine tone description based on pitch (tonalite)
+    let toneDesc = "neutral tone";
+    if (tonalite < 0.8) toneDesc = "very deep and gravelly tone";
+    else if (tonalite < 1.0) toneDesc = "low and resonant tone";
+    else if (tonalite > 1.2) toneDesc = "very high and light tone";
+    else if (tonalite > 1.0) toneDesc = "slightly higher and brighter tone";
+
+    // Determine pace description based on speed (rythme)
+    let paceDesc = "natural pacing";
+    if (rythme < 0.8) paceDesc = "very slow and deliberate pacing";
+    else if (rythme < 1.0) paceDesc = "slow and calm pacing";
+    else if (rythme > 1.2) paceDesc = "very fast and urgent pacing";
+    else if (rythme > 1.0) paceDesc = "quick and energetic pacing";
+
+    const promptText = `
+Say with a ${toneDesc}, ${paceDesc}:
+"${script}"
+`;
+
     // 1. Appel à l'API TTS de Gemini
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: script }] }],
+      contents: [{ parts: [{ text: promptText }] }],
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {

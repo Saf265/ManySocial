@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Heart, Mic, Play, Search, Settings, User, X } from "lucide-react";
+import { Activity, ArrowRightLeft, Gauge, Heart, Mic, Play, Search, Settings, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -47,8 +47,8 @@ export default function VoiceoversPage() {
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState("Zephyr");
-  const [speed, setSpeed] = useState(1.0);
-  const [pitch, setPitch] = useState(1.0);
+  const [rythme, setRythme] = useState(1.0);
+  const [tonalite, setTonalite] = useState(1.0);
   const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState([]);
   const { load, playing, togglePlay } = useAudioPlayer();
@@ -112,8 +112,8 @@ export default function VoiceoversPage() {
           title: title.trim(),
           script: script.trim(),
           voice: selectedVoice,
-          speed,
-          pitch
+          rythme,
+          tonalite
         }),
       });
 
@@ -141,12 +141,18 @@ export default function VoiceoversPage() {
 
   // Get color for voice avatar
   const getVoiceColor = (name) => {
-    const colors = [
-      "bg-pink-500", "bg-purple-500", "bg-blue-500", "bg-green-500",
-      "bg-yellow-500", "bg-red-500", "bg-indigo-500", "bg-teal-500"
+    const gradients = [
+      "bg-gradient-to-br from-pink-500 to-rose-500",
+      "bg-gradient-to-br from-purple-500 to-indigo-500",
+      "bg-gradient-to-br from-blue-500 to-cyan-500",
+      "bg-gradient-to-br from-emerald-500 to-teal-500",
+      "bg-gradient-to-br from-orange-500 to-amber-500",
+      "bg-gradient-to-br from-red-500 to-orange-500",
+      "bg-gradient-to-br from-indigo-500 to-blue-500",
+      "bg-gradient-to-br from-teal-500 to-emerald-500"
     ];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
+    const index = name.charCodeAt(0) % gradients.length;
+    return gradients[index];
   };
 
   return (
@@ -156,23 +162,28 @@ export default function VoiceoversPage() {
           {/* Left Column */}
           <div className="space-y-6 h-full flex flex-col">
             {/* Voice and Settings Buttons */}
-            <div className="flex gap-3">
+            {/* Voice and Settings Buttons */}
+            <div className="flex items-stretch gap-3">
               <button
                 type="button"
                 onClick={() => setShowVoiceModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 group flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-2xl hover:border-gray-300 transition-all text-left"
               >
-                <User size={18} className="text-gray-600" />
-                <span className="text-sm text-gray-700">{selectedVoice}</span>
-                <ChevronDown size={16} className="text-gray-500" />
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full ${getVoiceColor(selectedVoice)} flex items-center justify-center text-white font-medium shadow-sm`}>
+                    {selectedVoice.charAt(0)}
+                  </div>
+                  <span className="text-lg font-medium text-gray-900">{selectedVoice}</span>
+                </div>
+                <ArrowRightLeft className="text-gray-400 group-hover:text-gray-600 transition-colors" size={20} />
               </button>
+              
               <button
                 type="button"
                 onClick={() => setShowSettingsModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-[68px] flex items-center justify-center bg-white border border-gray-200 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all text-gray-600"
               >
-                <Settings size={18} className="text-gray-600" />
-                <span className="text-sm text-gray-700">Paramètres</span>
+                <Settings size={24} />
               </button>
             </div>
 
@@ -312,35 +323,35 @@ export default function VoiceoversPage() {
 
       {/* Voice Selection Modal */}
       {showVoiceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowVoiceModal(false)}>
-          <div className="bg-white rounded-lg w-full max-w-3xl max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">Sélectionner une Voix IA</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowVoiceModal(false)}>
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 pb-2">
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Sélectionner une voix</h3>
               <button
                 onClick={() => setShowVoiceModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
 
             {/* Search Bar */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="px-6 py-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <input
                   type="text"
-                  placeholder="Rechercher nom, tag, etc."
+                  placeholder="Rechercher une voix, un style..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-100 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
                 />
               </div>
             </div>
 
             {/* Voice Grid */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex-1 overflow-y-auto px-6 py-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredVoices.map((voice) => {
                   const isFavorite = favorites.includes(voice.name);
                   const isSelected = selectedVoice === voice.name;
@@ -348,66 +359,62 @@ export default function VoiceoversPage() {
                   return (
                     <div
                       key={voice.name}
-                      className={`relative border rounded-lg p-4 cursor-pointer transition-all ${isSelected
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-200 group ${isSelected
+                        ? "bg-blue-50 ring-2 ring-blue-600"
+                        : "hover:bg-gray-50 border border-gray-100 hover:border-gray-200"
                         }`}
                       onClick={() => {
                         setSelectedVoice(voice.name);
-                        setShowVoiceModal(false);
                       }}
                     >
-                      {/* Favorite Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(voice.name);
-                        }}
-                        className="absolute top-3 right-3 z-10"
-                      >
-                        <Heart
-                          size={18}
-                          className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-400 hover:text-red-500"}
-                        />
-                      </button>
-
-                      {/* Voice Avatar */}
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className={`w-10 h-10 rounded-full ${getVoiceColor(voice.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}>
-                          {voice.name.charAt(0)}
+                      {/* Header: Avatar + Name + Heart */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-full ${getVoiceColor(voice.name)} flex items-center justify-center text-white font-bold text-lg shadow-sm`}>
+                            {voice.name.charAt(0)}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900">{voice.name}</h4>
+                            <p className="text-sm text-gray-500 font-medium">{voice.gender}</p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 truncate">{voice.name}</h4>
-                          <p className="text-xs text-gray-500">{voice.description}</p>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(voice.name);
+                          }}
+                          className={`p-2 rounded-full transition-colors ${isFavorite ? "text-red-500 bg-red-50" : "text-gray-300 hover:text-gray-500 hover:bg-gray-100"}`}
+                        >
+                          <Heart size={18} className={isFavorite ? "fill-current" : ""} />
+                        </button>
                       </div>
 
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        <span className={`text-xs px-2 py-0.5 rounded ${voice.gender === "Male" ? "bg-blue-100 text-blue-700" : "bg-pink-100 text-pink-700"
-                          }`}>
-                          {voice.gender}
-                        </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
-                          Multilingual
-                        </span>
-                      </div>
+                      {/* Description */}
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        {voice.description}
+                      </p>
 
-                      {/* Play Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          load(voice.voicePreview, { autoplay: true })
-                          toast.success(`Aperçu de ${voice.name}`);
-                        }}
-                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                      >
-                        <Play size={14} />
-                        <span>Écouter</span>
-                      </button>
+                      {/* Footer: Tags + Play */}
+                      <div className="flex items-center justify-between mt-auto">
+                        <div className="flex gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-1 rounded-md">
+                            {voice.tags[1]} // Pitch tag
+                          </span>
+                        </div>
+                        
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            load(voice.voicePreview, { autoplay: true })
+                          }}
+                          className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-700 hover:scale-105 active:scale-95 transition-all"
+                        >
+                          <Play size={14} className="ml-0.5" fill="currentColor" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -415,13 +422,13 @@ export default function VoiceoversPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-gray-200">
+            <div className="p-6 border-t border-gray-100 bg-white/80 backdrop-blur-xl">
               <button
                 type="button"
                 onClick={() => setShowVoiceModal(false)}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="w-full bg-blue-600 text-white py-3.5 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-lg"
               >
-                Terminé
+                Confirmer la sélection
               </button>
             </div>
           </div>
@@ -430,71 +437,84 @@ export default function VoiceoversPage() {
 
       {/* Settings Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowSettingsModal(false)}>
-          <div className="bg-white rounded-lg p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Paramètres de la voix</h3>
+        <div className="fixed inset-0  bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowSettingsModal(false)}>
+          <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl relative overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Paramètres</h3>
               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="space-y-6">
+            
+            <div className="space-y-8">
               {/* Speed Control */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">Vitesse</label>
-                  <span className="text-sm text-gray-500">{speed.toFixed(1)}x</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                      <Gauge size={20} />
+                    </div>
+                    <label className="font-semibold text-gray-900">Rythme</label>
+                  </div>
+                  <span className="font-mono font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md text-sm">{rythme.toFixed(1)}x</span>
                 </div>
                 <input
                   type="range"
                   min="0.5"
                   max="2.0"
                   step="0.1"
-                  value={speed}
-                  onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  value={rythme}
+                  onChange={(e) => setRythme(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:accent-blue-700"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>0.5x</span>
-                  <span>2.0x</span>
+                <div className="flex justify-between text-xs font-medium text-gray-400 mt-2">
+                  <span>Lent (0.5x)</span>
+                  <span>Rapide (2.0x)</span>
                 </div>
               </div>
 
               {/* Pitch Control */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">Tonalité</label>
-                  <span className="text-sm text-gray-500">{pitch.toFixed(1)}</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
+                      <Activity size={20} />
+                    </div>
+                    <label className="font-semibold text-gray-900">Tonalité</label>
+                  </div>
+                  <span className="font-mono font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-md text-sm">{tonalite.toFixed(1)}</span>
                 </div>
                 <input
                   type="range"
                   min="0.5"
                   max="2.0"
                   step="0.1"
-                  value={pitch}
-                  onChange={(e) => setPitch(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  value={tonalite}
+                  onChange={(e) => setTonalite(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-purple-600 hover:accent-purple-700"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs font-medium text-gray-400 mt-2">
                   <span>Grave</span>
                   <span>Aigu</span>
                 </div>
               </div>
 
               {/* Reset Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setSpeed(1.0);
-                  setPitch(1.0);
-                }}
-                className="w-full py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Réinitialiser les paramètres
-              </button>
+              <div className="pt-4 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRythme(1.0);
+                    setTonalite(1.0);
+                  }}
+                  className="text-sm font-medium text-gray-400 hover:text-gray-900 transition-colors"
+                >
+                  Réinitialiser par défaut
+                </button>
+              </div>
             </div>
           </div>
         </div>

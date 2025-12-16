@@ -3,7 +3,7 @@
 import { db } from "@/db/drizzle"
 import { ImagesGenerated } from "@/db/drizzle/schema"
 import { GoogleGenAI } from "@google/genai"
-import { eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 
 // get GeneratedImage from ID
 export async function getGeneratedImage(id) {
@@ -33,4 +33,16 @@ Prompt: ${prompt}`;
   const response = result.candidates[0].content.parts[0].text;
 
   return response;
+}
+
+
+export async function getUserGeneratedImages(userId) {
+  const data = await db
+    .select()
+    .from(ImagesGenerated)
+    .where(eq(ImagesGenerated.userId, userId))
+    .orderBy(desc(ImagesGenerated.createdAt))
+    .limit(10)
+
+  return data
 }
