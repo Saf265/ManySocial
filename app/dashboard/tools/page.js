@@ -35,7 +35,7 @@ export default function AIToolsDashboard() {
       title: "Générateur de Voix Off IA",
       description: "Créez des voix off de haute qualité en quelques secondes avec plus de 50 narrateurs.",
       icon: Mic,
-      preview: "/api/placeholder/300/200",
+      preview: "/Voiceover-BG.svg",
       href: "/dashboard/tools/voiceovers"
     },
     {

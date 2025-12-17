@@ -3,10 +3,16 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins";
 import MagicLinkEmail from "../../email/MagicLink";
 import { db } from "../db/drizzle/index"; // your drizzle instance
+import * as schema from "../db/drizzle/schema";
 import { resend } from "./resend";
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
+    provider: "pg",
+    schema: {
+      ...schema,
+      user: schema.users,
+    }
   }),
   socialProviders: {
     google: {

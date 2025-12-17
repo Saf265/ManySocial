@@ -1,8 +1,10 @@
 import { db } from "@/db/drizzle";
 import { VoicesGenerated } from "@/db/drizzle/schema";
+import { auth } from "@/lib/auth";
 import { uploadFile } from "@/lib/upload-file"; // Assurez-vous que cette fonction gère l'upload du Buffer
 import { GoogleGenAI } from "@google/genai";
 import { nanoid } from "nanoid";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { PassThrough } from "stream"; // Importation nécessaire pour travailler avec les buffers
 import wav from 'wav';
@@ -120,13 +122,25 @@ Say with a ${toneDesc}, ${paceDesc}:
     // 3. Upload du Buffer WAV complet
     const audioURL = await uploadFile(waveBuffer); // Stocke un fichier .wav valide
 
+    const headersList = await headers()
+    const session = await auth.api.getSession({
+      headers: headersList
+    })
+
+    if (!session?.user) {
+      return NextResponse.json({
+        success: false,
+        error: "Utilisateur non authentifié"
+      }, { status: 401 })
+    }
+
     // 4. Stockage en base de données
     const randomId = nanoid()
     const dataStocked = await db.insert(VoicesGenerated).values({
       title: title.trim(),
       text: script.trim(),
       audioURL: audioURL,
-      userId: "temp-userId", // Remplacer par l'ID utilisateur réel
+      userId: session.user.id,
       id: randomId
     }).returning()
 

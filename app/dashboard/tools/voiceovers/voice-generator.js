@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ArrowRightLeft, Gauge, Heart, Mic, Play, Search, Settings, X } from "lucide-react";
+import { Activity, ArrowRightLeft, Gauge, Heart, Mic, Pause, Play, Search, Settings, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -51,6 +51,7 @@ export default function VoiceGenerator({ initialVoiceovers = [] }) {
   const [tonalite, setTonalite] = useState(1.0);
   const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState([]);
+  const [activeAudioUrl, setActiveAudioUrl] = useState(null);
   const { load, playing, togglePlay } = useAudioPlayer();
 
   // Load favorites from sessionStorage
@@ -150,6 +151,24 @@ export default function VoiceGenerator({ initialVoiceovers = [] }) {
 
   const characterCount = script.length;
   const estimatedDuration = Math.ceil(characterCount / 15);
+
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      toast.error("Erreur lors du téléchargement");
+    }
+  };
 
   // Get color for voice avatar
   const getVoiceColor = (name) => {
@@ -271,23 +290,40 @@ export default function VoiceGenerator({ initialVoiceovers = [] }) {
                   <div className="space-y-4">
                     {generatedVoiceovers.map((voiceover) => (
                       <div key={voiceover.id} className="bg-gray-50 rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-3">
-                          Sélectionnez et téléchargez le clip pour générer une voix off
-                        </p>
+                      
                         <div className="mb-3">
                           <p className="text-sm font-medium text-gray-900 mb-2">
                             {voiceover.title}
                           </p>
-                          <audio
-                            controls
-                            src={voiceover.audioUrl}
-                            className="w-full"
-                          />
+                          <div className="flex items-center justify-center bg-gray-100 rounded-lg p-4 mb-2">
+                             <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (activeAudioUrl === voiceover.audioURL) {
+                                    togglePlay();
+                                  } else {
+                                    load(voiceover.audioURL, { autoplay: true, format: "wav" });
+                                    setActiveAudioUrl(voiceover.audioURL);
+                                  }
+                                }}
+                                className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:scale-105 transition-all text-blue-600"
+                              >
+                                {activeAudioUrl === voiceover.audioURL && playing ? (
+                                  <Pause size={20} fill="currentColor" />
+                                ) : (
+                                  <Play size={20} fill="currentColor" className="ml-0.5" />
+                                )}
+                              </button>
+                          </div>
                         </div>
                         <a
-                          href={voiceover.audioUrl}
-                          download={`${voiceover.title}.mp3`}
-                          className="inline-block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                          href={voiceover.audioURL}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDownload(voiceover.audioURL, `${voiceover.title}.mp3`);
+                          }}
+                          className="inline-block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer"
                         >
                           Télécharger la Voix Off
                         </a>
