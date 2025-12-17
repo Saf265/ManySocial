@@ -1,25 +1,30 @@
+import { db } from "@/db/drizzle";
+import { VideosGenerated } from "@/db/drizzle/schema";
+import { auth } from "@/lib/auth";
+import { nanoid } from "nanoid";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 
-async function getVideo(genId) {
-  const url = new URL('https://api.aimlapi.com/v2/video/generations');
-  url.searchParams.append('generation_id', genId);
+// async function getVideo(genId) {
+//   const url = new URL('https://api.aimlapi.com/v2/video/generations');
+//   url.searchParams.append('generation_id', genId);
 
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${process.env.AIMLAPI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
+//   try {
+//     const response = await fetch(url, {
+//       method: 'GET',
+//       headers: {
+//         Authorization: `Bearer ${process.env.AI_ML_KEY}`,
+//         'Content-Type': 'application/json',
+//       },
+//     });
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching video:', error);
-    return null;
-  }
-}
+//     return await response.json();
+//   } catch (error) {
+//     console.error('Error fetching video:', error);
+//     return null;
+//   }
+// }
 
 export async function POST(request) {
     const { prompt, model, duration, aspectRatio, image } = await request.json();
@@ -34,7 +39,7 @@ export async function POST(request) {
   const response = await fetch('https://api.aimlapi.com/v2/video/generations', {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer ' + process.env.AIMLAPI_API_KEY,
+      'Authorization': 'Bearer ' + process.env.AI_ML_KEY,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -66,37 +71,61 @@ export async function POST(request) {
 
 
   const responseData = await response.json();
+  console.log("response",responseData);
 
-  const genId = responseData.id;
+  const genId = responseData.generation_id;
   console.log('Generation ID:', genId);
 
-   if (genId) {
-    const timeout = 600 * 1000; // 10 minutes
-    const startTime = Date.now();
+  const headersList = await headers()
+  const session = await auth.api.getSession({
+    headers: headersList
+  })
 
-    while (Date.now() - startTime < timeout) {
-      const responseData = await getVideo(genId);
-
-      if (!responseData) {
-        console.error('Error: No response from API');
-        break;
-      }
-
-      const status = responseData.status;
-      console.log('Status:', status);
-
-      if (['waiting', 'active', 'queued', 'generating'].includes(status)) {
-        console.log('Still waiting... Checking again in 10 seconds.');
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-      } else {
-        console.log('Processing complete:\n', responseData);
-        return NextResponse.json({ success: true, responseData });
-      }
-    }
-
-    console.log('Timeout reached. Stopping.');
-    return NextResponse.json({ error: "Timeout reached" }, { status: 500 });
+  const userId = session?.user?.id
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ error: "Timeout reached" }, { status: 500 });
+
+  const randomId = nanoid()
+  await db.insert(VideosGenerated).values({
+    id: randomId,
+    jobId: genId,
+    userId: userId,
+    prompt: prompt,
+    aspectRatio: aspectRatio,
+    model: model,
+    duration: durationInt,
+    videoURL: null,
+    status: "processing",
+  });
+
+  //  if (genId) {
+  //   const timeout = 600 * 1000; // 10 minutes
+  //   const startTime = Date.now();
+
+  //   while (Date.now() - startTime < timeout) {
+  //     const responseData = await getVideo(genId);
+
+  //     if (!responseData) {
+  //       console.error('Error: No response from API');
+  //       break;
+  //     }
+
+  //     const status = responseData.status;
+  //     console.log('Status:', status);
+
+  //     if (['waiting', 'active', 'queued', 'generating'].includes(status)) {
+  //       console.log('Still waiting... Checking again in 10 seconds.');
+  //       await new Promise((resolve) => setTimeout(resolve, 10000));
+  //     } else {
+  //       console.log('Processing complete:\n', responseData);
+  //       return NextResponse.json({ success: true, responseData });
+  //     }
+  //   }
+
+  //   console.log('Timeout reached. Stopping.');
+  //   return NextResponse.json({ error: "Timeout reached" }, { status: 500 });
+  // }
+  return NextResponse.json({ success: true, jobId: randomId });
 }

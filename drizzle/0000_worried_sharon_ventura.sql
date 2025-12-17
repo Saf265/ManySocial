@@ -7,6 +7,21 @@ CREATE TABLE "images_generated" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "videos_generated" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"prompt" text,
+	"aspect_ratio" text,
+	"model" text,
+	"duration" integer,
+	"video" text,
+	"blob_url" text,
+	"job_id" text NOT NULL,
+	"status" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "vocal_enhancer_generated" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
@@ -77,6 +92,7 @@ CREATE TABLE "verification" (
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "images_generated_userId_idx" ON "images_generated" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "videos_generated_userId_idx" ON "videos_generated" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "vocal_enhancer_generated_userId_idx" ON "vocal_enhancer_generated" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "voices_generated_userId_idx" ON "voices_generated" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint

@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, FileTextIcon, Image, Search, Sparkles, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import CustomSelect from "../../components/CustomSelect";
 
@@ -73,6 +74,7 @@ export default function GenerateVideoPage() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const fileInputRef = useRef(null);
+  const router = useRouter();
 
   const handleModelChange = (newModel) => {
     setModel(newModel);
@@ -143,8 +145,6 @@ export default function GenerateVideoPage() {
 
       console.log('Generating video with data:', submissionData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
       const response = await fetch("/api/tools/generate-video", {
         method: "POST",
         headers: {
@@ -153,9 +153,10 @@ export default function GenerateVideoPage() {
         body: JSON.stringify(submissionData),
       });
       console.log(response);
-      // Handle success (would typically call an API here)
-      // For now we just log as requested
-      
+      const data = await response.json();
+      console.log(data);
+
+      router.push(`/dashboard/tools/videos/${data.jobId}`);
     } catch (error) {
       console.error('Error generating video:', error);
     } finally {

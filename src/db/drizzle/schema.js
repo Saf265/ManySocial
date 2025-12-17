@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -127,11 +127,15 @@ export const VideosGenerated = pgTable(
   {
     id: text("id").primaryKey(),
     userId: text("user_id").notNull(),
-    prompt: text("prompt").notNull(),
-    aspectRatio: text("aspect_ratio").notNull(),
-    model: text("model").notNull(),
-    duration: text("duration").notNull(),
-    videoURL: text("video").notNull(),
+    prompt: text("prompt"),
+    aspectRatio: text("aspect_ratio"),
+    model: text("model"),
+    duration: integer("duration"),
+    videoURL: text("video"),
+    blobUrl: text("blob_url"),// dz
+    jobId: text("job_id").notNull(), // fzj
+    // job
+    status: text("status").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
