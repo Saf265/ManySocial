@@ -1,28 +1,49 @@
 "use client";
 
-import { BookOpen, Image, Search, Sparkles, X } from "lucide-react";
+import { BookOpen, FileTextIcon, Image, Search, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import CustomSelect from "../../components/CustomSelect";
 
 const modelOptions = [
-  { id: 1, value: "veo3-standard", label: "VEO3 Standard", badge: "Populaire" },
-  { id: 2, value: "veo3-pro", label: "VEO3 Pro", badge: "Premium" },
-  { id: 3, value: "runway-gen3", label: "Runway Gen-3", badge: "Créatif" },
+  { id: 1, value: "google/veo-3.0-i2v", label: "VEO3 Standard", badge: "Populaire" },
+  { id: 2, value: "google/veo-3.0-i2v-fast", label: "VEO3 Fast", badge: "Rapide" },
+  { id: 3, value: "minimax/hailuo-02", label: "Hailuo 2", badge: "Créatif" },
+  { id: 4, value:"openai/sora-2-i2v", label: "Sora 2", badge: "Premium" }
 ];
 
-const durationOptions = [
+const ALL_DURATIONS = [
   { id: 1, value: "4s", label: "4s" },
-  { id: 2, value: "8s", label: "8s" },
-  { id: 3, value: "12s", label: "12s" },
-  { id: 4, value: "16s", label: "16s" },
+  { id: 2, value: "5s", label: "5s" },
+  { id: 7, value: "6s", label: "6s" },
+  { id: 3, value: "8s", label: "8s" },
+  { id: 4, value: "10s", label: "10s" },
+  { id: 5, value: "12s", label: "12s" },
+  { id: 6, value: "16s", label: "16s" },
 ];
 
-const aspectRatioOptions = [
+const ALL_ASPECT_RATIOS = [
   { id: 1, value: "16:9", label: "16:9" },
   { id: 2, value: "9:16", label: "9:16" },
-  { id: 3, value: "1:1", label: "1:1" },
-  { id: 4, value: "4:3", label: "4:3" },
 ];
+
+const MODEL_CONFIGS = {
+  "google/veo-3.0-i2v": {
+    durations: ["4s", "6s", "8s"],
+    aspectRatios: ["16:9", "9:16"]
+  },
+  "google/veo-3.0-i2v-fast": {
+    durations: ["4s", "6s", "8s"],
+    aspectRatios: ["16:9", "9:16"]
+  },
+  "minimax/hailuo-02": {
+    durations: ["6s", "10s"],
+    aspectRatios: ["16:9"]
+  },
+  "openai/sora-2-i2v": {
+    durations: ["4s","8s", "12s"],
+    aspectRatios: ["16:9", "9:16" ]
+  }
+};
 
 const samplePrompts = [
   { id: 1, title: "Paysage Cinématique", text: "Vue aérienne cinématique d'une chaîne de montagnes enneigée au coucher du soleil, éclairage doré, 8k, très détaillé." },
@@ -34,7 +55,16 @@ const samplePrompts = [
 
 export default function GenerateVideoPage() {
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("veo3-standard");
+  const [model, setModel] = useState("google/veo-3.0-i2v");
+  
+  // Initialize options based on default model
+  const [availableDurations, setAvailableDurations] = useState(() => 
+    ALL_DURATIONS.filter(d => MODEL_CONFIGS["google/veo-3.0-i2v"].durations.includes(d.value))
+  );
+  const [availableAspectRatios, setAvailableAspectRatios] = useState(() => 
+    ALL_ASPECT_RATIOS.filter(r => MODEL_CONFIGS["google/veo-3.0-i2v"].aspectRatios.includes(r.value))
+  );
+
   const [duration, setDuration] = useState("8s");
   const [aspectRatio, setAspectRatio] = useState("16:9");
   const [image, setImage] = useState(null);
@@ -43,6 +73,28 @@ export default function GenerateVideoPage() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const fileInputRef = useRef(null);
+
+  const handleModelChange = (newModel) => {
+    setModel(newModel);
+    
+    // Update available options
+    const config = MODEL_CONFIGS[newModel];
+    if (config) {
+      const newDurations = ALL_DURATIONS.filter(d => config.durations.includes(d.value));
+      const newAspectRatios = ALL_ASPECT_RATIOS.filter(r => config.aspectRatios.includes(r.value));
+      
+      setAvailableDurations(newDurations);
+      setAvailableAspectRatios(newAspectRatios);
+      
+      // Reset selections if not valid for new model
+      if (!config.durations.includes(duration)) {
+        setDuration(newDurations[0]?.value || "");
+      }
+      if (!config.aspectRatios.includes(aspectRatio)) {
+        setAspectRatio(newAspectRatios[0]?.value || "");
+      }
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -93,7 +145,14 @@ export default function GenerateVideoPage() {
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const response = await fetch("/api/tools/generate-video", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
+      console.log(response);
       // Handle success (would typically call an API here)
       // For now we just log as requested
       
@@ -121,7 +180,7 @@ export default function GenerateVideoPage() {
             </label>
             <CustomSelect
               value={model}
-              onChange={setModel}
+              onChange={handleModelChange}
               options={modelOptions}
               placeholder="Sélectionner un modèle"
             />
@@ -134,7 +193,7 @@ export default function GenerateVideoPage() {
             <CustomSelect
               value={duration}
               onChange={setDuration}
-              options={durationOptions}
+              options={availableDurations}
               placeholder="Sélectionner une durée"
             />
           </div>
@@ -146,21 +205,30 @@ export default function GenerateVideoPage() {
             <CustomSelect
               value={aspectRatio}
               onChange={setAspectRatio}
-              options={aspectRatioOptions}
+              options={availableAspectRatios}
               placeholder="Sélectionner un format"
             />
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3 mb-6">
+      {/* Action Buttons */}
+      {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 mb-4 items-center">
           <button
             type="button"
             onClick={() => setShowPromptLibrary(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            className="h-9 flex items-center gap-2 px-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors "
           >
-            <BookOpen size={16} />
+            <BookOpen size={16} className="text-gray-500" />
             Bibliothèque de prompts
+          </button>
+
+          <button
+            type="button"
+            className="h-9 flex items-center gap-2 px-3 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors "
+          >
+            <FileTextIcon size={16} className="text-gray-500" />
+            Documentation prompt
           </button>
           
           <input 
@@ -171,23 +239,22 @@ export default function GenerateVideoPage() {
             className="hidden" 
           />
           
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className={`flex items-center gap-2 px-4 py-2 border rounded-lg text-sm transition-colors ${
-              image 
-              ? "bg-blue-50 border-blue-200 text-blue-700" 
-              : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
-            }`}
-          >
-            <Image size={16} />
-            {image ? "Modifier l'image de référence" : "Ajouter une image de référence"}
-          </button>
-
-          {image && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-600">
-              <span className="truncate max-w-[150px]">{image.name}</span>
-              <button onClick={removeImage} className="hover:text-red-500">
+          {!image ? (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-2 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              <Image size={16} />
+              Ajouter une image de référence
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
+              <span className="truncate max-w-[200px]">{image.name}</span>
+              <button 
+                onClick={removeImage} 
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
                 <X size={14} />
               </button>
             </div>
@@ -195,7 +262,7 @@ export default function GenerateVideoPage() {
         </div>
 
         {/* Prompt Section */}
-        <div className="mb-6">
+        <div className="mb-6  pt-6  ">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Prompt
           </label>
@@ -203,7 +270,7 @@ export default function GenerateVideoPage() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Décrivez la vidéo que vous souhaitez créer..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full bg-white px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             rows={8}
           />
         </div>
