@@ -26,7 +26,7 @@ CREATE TABLE "vocal_enhancer_generated" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"file_name" text NOT NULL,
-	"audio_url" text NOT NULL,
+	"file_url" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );

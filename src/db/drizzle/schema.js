@@ -112,7 +112,7 @@ export const VocalEnhancerGenerated = pgTable(
     id: text("id").primaryKey(),
     userId: text("user_id").notNull(),
     fileName: text("file_name").notNull(),
-    audioURL: text("audio_url").notNull(),
+    fileURL: text("file_url").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

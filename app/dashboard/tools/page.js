@@ -1,4 +1,4 @@
-import { Lightbulb, MessageSquare, Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
+import { Lightbulb, Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -42,9 +42,9 @@ export default function AIToolsDashboard() {
       title: "Amélioration Audio IA",
       description: "Améliorez la qualité de n'importe quel fichier audio ou vidéo avec l'IA.",
       icon: Volume2,
-      preview: "/api/placeholder/300/200",
+      preview: "/Enhance-BG.svg",
       badge: "New",
-      href: "/dashboard/tools/enhance-audio"
+      href: "/dashboard/tools/enhance-speech"
     },
     {
       title: "Générateur de Vidéos IA",
@@ -67,20 +67,7 @@ export default function AIToolsDashboard() {
       preview: "/api/placeholder/300/200",
       href: "/dashboard/tools/brainstorming"
     },
-    {
-      title: "Générateur Vidéos Reddit",
-      description: "Convertissez les publications Reddit en vidéos virales avec l'IA.",
-      icon: MessageSquare,
-      preview: "/api/placeholder/300/200",
-      href: "/dashboard/tools/reddit"
-    },
-    {
-      title: "Générateur Faux SMS Vidéo",
-      description: "Créez des vidéos de faux SMS engageantes avec l'IA pour devenir viral.",
-      icon: MessageSquare,
-      preview: "/api/placeholder/300/200",
-      href: "/dashboard/tools/fake-sms"
-    },
+    
     {
       title: "Vidéo Split Screen",
       description: "Créez des vidéos split screen virales facilement.",

@@ -1,5 +1,5 @@
 {
-  "id": "becda38d-ca9b-4ce2-a648-80fabe9cc3e2",
+  "id": "ec21c372-fbf9-4b53-9da4-ab5b453d6055",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -196,8 +196,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "audio_url": {
-          "name": "audio_url",
+        "file_url": {
+          "name": "file_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
