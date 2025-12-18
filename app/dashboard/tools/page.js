@@ -50,7 +50,7 @@ export default function AIToolsDashboard() {
       title: "Générateur de Vidéos IA",
       description: "VEO3 est un outil qui vous permet de créer des vidéos avec l'IA.",
       icon: Video,
-      preview: "/api/placeholder/300/200",
+      preview: "/Video-BG.svg",
       href: "/dashboard/tools/videos"
     },
     {
