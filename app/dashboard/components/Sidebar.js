@@ -1,19 +1,18 @@
 "use client";
 
 import {
-    ArrowRight,
-    Bell,
-    ChevronRight,
-    Command,
-    Files,
-    FolderOpen,
-    Home,
-    LifeBuoy,
-    Search,
-    Settings,
-    Wand2,
-    X,
-    Zap
+  ArrowRight,
+  ChevronRight,
+  Command,
+  Files,
+  FolderOpen,
+  Home,
+  LifeBuoy,
+  Search,
+  Settings,
+  Wand2,
+  X,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -33,7 +32,6 @@ const searchableTools = [
 ];
 
 const secondaryItems = [
-  { name: "Notifications", href: "/dashboard/notifications", icon: Bell, badge: 12 },
   { name: "Support", href: "/dashboard/support", icon: LifeBuoy },
   { name: "Paramètres", href: "/dashboard/settings", icon: Settings },
 ];
@@ -100,9 +98,9 @@ export default function Sidebar() {
   return (
     <>
       <aside className={`
-        relative h-screen bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-20" : "w-64"}
-      `}>
+      sticky top-0 h-screen bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out z-40
+      ${isCollapsed ? "w-20" : "w-64"}
+    `}>
         {/* Header Section */}
         <div className="h-20 flex items-center px-5 shrink-0">
           <div className={`flex items-center gap-3 overflow-hidden transition-all duration-300 ${isCollapsed ? "w-0 opacity-0" : "w-full opacity-100"}`}>
