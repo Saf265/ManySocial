@@ -154,7 +154,7 @@ export default function Sidebar() {
         </div>
 
         {/* Main Navigation */}
-        <nav className="flex-1 space-y-1.5 px-3 overflow-y-auto custom-scrollbar">
+        <nav className={`flex-1 space-y-1.5 px-3 ${isCollapsed ? "overflow-visible" : "overflow-y-auto custom-scrollbar"}`}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
@@ -175,6 +175,12 @@ export default function Sidebar() {
                   <span className="ml-3 text-[15px] font-medium whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
                     {item.name}
                   </span>
+                )}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-gray-900 text-white text-[12px] font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-[100] shadow-xl translate-x-2 group-hover:translate-x-0">
+                    {item.name}
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                  </div>
                 )}
               </Link>
             );
@@ -211,6 +217,12 @@ export default function Sidebar() {
                 )}
                 {isCollapsed && item.badge && (
                   <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#2563eb] rounded-full border-2 border-white" />
+                )}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-gray-900 text-white text-[12px] font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-[100] shadow-xl translate-x-2 group-hover:translate-x-0">
+                    {item.name}
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                  </div>
                 )}
               </Link>
             );
