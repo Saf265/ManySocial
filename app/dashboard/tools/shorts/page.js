@@ -9,12 +9,11 @@ import {
   Files,
   Globe,
   Mic,
-  Music,
-  Play,
+  Music, Pause, Play,
   Type,
   Zap
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 const SUBTITLE_MODELS = [
@@ -37,7 +36,7 @@ const VOICES = [
 const MUSIC_TRACKS = [
   { name: "Pas d'audio", preview: null },
   { name: "CentralCee Sprintal (Intrumental)", preview: "https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766351033/Dave_x_Central_Cee_-_Sprinter_Instrumental_eyakwa.mp3" },
-  { name: "Young Folks", preview: "https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766351033/Peter_Bjorn_And_John_-_Young_Folks_xkfzej.mp3" },
+  { name: "Young Folks", preview: "https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766353129/Young_Folks_Instrumentals_xcckdt.mp3" },
   { name: "Death of Bluebird - Gone", preview: "https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766351032/Death_of_Bluebird_x_Gone_Gone_Thank_You_Edit_Audio_gvu4gr.mp3" },
   {name: "Creepy And Simple Horror Background Music", preview: "https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766351031/creepy_and_simple_horror_background_music_tiktok_music_xlmfcj.mp3"},
   {name:"Scary Suspense Horror Piano And Music Box", preview:"https://res.cloudinary.com/dotihphpy/video/upload/q_auto/v1766351032/Scary_Suspense_horror_piano_and_music_box_frmvzw.mp3"},
@@ -49,6 +48,30 @@ export default function ManySocialShortsPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [musicDropdownOpen, setMusicDropdownOpen] = useState(false);
+  const [playingUrl, setPlayingUrl] = useState(null);
+  const audioRef = useRef(null);
+
+  const playPreview = (url) => {
+    if (playingUrl === url && audioRef.current) {
+      audioRef.current.pause();
+      setPlayingUrl(null);
+      return;
+    }
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    setPlayingUrl(url);
+    audio.play().catch(err => console.error("Audio play error:", err));
+
+    audio.onended = () => {
+      setPlayingUrl(null);
+      audioRef.current = null;
+    };
+  };
   
   // Form State
   const [formData, setFormData] = useState({
@@ -76,6 +99,14 @@ export default function ManySocialShortsPage() {
     window.addEventListener('yt-duration', handleYTDuration);
     return () => window.removeEventListener('yt-duration', handleYTDuration);
   }, [analyzedVideo]);
+
+  // Stop audio on step change
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  }, [step]);
 
   const getYoutubeId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -157,8 +188,14 @@ export default function ManySocialShortsPage() {
       .join(':');
   };
 
-  const nextStep = () => setStep(s => Math.min(s + 1, 4));
-  const prevStep = () => setStep(s => Math.max(s - 1, 1));
+  const nextStep = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    setStep(s => Math.min(s + 1, 4));
+  };
+  const prevStep = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    setStep(s => Math.max(s - 1, 1));
+  };
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-between mb-8 max-w-md mx-auto">
@@ -421,12 +458,12 @@ export default function ManySocialShortsPage() {
                             <button 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                new Audio(voice.preview).play();
+                                playPreview(voice.preview);
                               }}
-                              className="absolute top-3 right-3 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-blue-600 shadow-sm hover:scale-110 active:scale-95 transition-all opacity-0 group-hover:opacity-100 md:opacity-100"
-                              title="Écouter la démo"
+                              className={`absolute top-3 right-3 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all md:opacity-100 ${playingUrl === voice.preview ? 'text-rose-500 border-rose-100 opacity-100' : 'text-blue-600 opacity-0 group-hover:opacity-100'}`}
+                              title={playingUrl === voice.preview ? "Pause" : "Écouter la démo"}
                             >
-                              <Play size={14} fill="currentColor" />
+                              {playingUrl === voice.preview ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
                             </button>
                           </div>
                         ))}
@@ -462,7 +499,7 @@ export default function ManySocialShortsPage() {
                               className="fixed inset-0 z-20" 
                               onClick={() => setMusicDropdownOpen(false)} 
                             />
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 z-30 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl p-2 z-30 animate-in fade-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-scrollbar">
                               {MUSIC_TRACKS.map((track) => (
                                 <div 
                                   key={track.name}
@@ -483,11 +520,11 @@ export default function ManySocialShortsPage() {
                                     <button 
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        new Audio(track.preview).play();
+                                        playPreview(track.preview);
                                       }}
-                                      className="w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center text-blue-600 shadow-sm hover:scale-110 active:scale-95 transition-all"
+                                      className={`w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all ${playingUrl === track.preview ? 'text-rose-500 border-rose-100' : 'text-blue-600'}`}
                                     >
-                                      <Play size={12} fill="currentColor" />
+                                      {playingUrl === track.preview ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
                                     </button>
                                   )}
                                 </div>
