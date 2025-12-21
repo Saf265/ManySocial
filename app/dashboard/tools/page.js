@@ -1,4 +1,4 @@
-import { Lightbulb, Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
+import { Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -57,24 +57,9 @@ export default function AIToolsDashboard() {
       title: "Suppresseur de Voix IA",
       description: "Supprimez les voix de n'importe quel fichier audio ou vidéo avec l'IA.",
       icon: MicOff,
-      preview: "/api/placeholder/300/200",
+      preview: "/Vocal-Remover.png",
       href: "/dashboard/tools/vocal-remover"
     },
-    {
-      title: "IA Brainstorming",
-      description: "Générez des idées de contenu viral basées sur votre créneau.",
-      icon: Lightbulb,
-      preview: "/api/placeholder/300/200",
-      href: "/dashboard/tools/brainstorming"
-    },
-    
-    {
-      title: "Vidéo Split Screen",
-      description: "Créez des vidéos split screen virales facilement.",
-      icon: Video,
-      preview: "/api/placeholder/300/200",
-      href: "/dashboard/tools/split-screen"
-    }
   ];
 
   return (
