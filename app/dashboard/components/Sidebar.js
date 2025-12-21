@@ -1,25 +1,25 @@
 "use client";
 
 import {
-  ArrowRight,
-  ChevronRight,
-  Command,
-  Files,
-  FolderOpen,
-  Home,
-  LifeBuoy,
-  Search,
-  Settings,
-  Wand2,
-  X,
-  Zap
+    ArrowRight,
+    ChevronRight,
+    Command,
+    Files,
+    FolderOpen,
+    Home,
+    LifeBuoy,
+    Search,
+    Settings,
+    Wand2,
+    X,
+    Zap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const navItems = [
-  { name: "Accueil", href: "/dashboard/home", icon: Home, category: "Navigation" },
+  { name: "Accueil", href: "/dashboard", icon: Home, category: "Navigation" },
   { name: "Assets", href: "/dashboard/assets", icon: FolderOpen, category: "Navigation" },
   { name: "Projets", href: "/dashboard/projects", icon: Files, category: "Navigation" },
   { name: "Outils IA", href: "/dashboard/tools", icon: Wand2, category: "Navigation" },
@@ -157,7 +157,9 @@ export default function Sidebar() {
         <nav className={`flex-1 space-y-1.5 px-3 ${isCollapsed ? "overflow-visible" : "overflow-y-auto custom-scrollbar"}`}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname.startsWith(item.href);
+            const isActive = item.href === "/dashboard" 
+              ? pathname === "/dashboard" 
+              : pathname.startsWith(item.href);
 
             return (
               <Link

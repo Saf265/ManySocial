@@ -1,27 +1,9 @@
-import { Mic, MicOff, Music, Smile, Video, Volume2, Wand2, Youtube } from 'lucide-react';
+import { Mic, MicOff, Video, Volume2, Wand2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AIToolsDashboard() {
-  const freeTools = [
-    {
-      title: "Outils Gratuits",
-      icon: Smile,
-      color: "bg-gray-50"
-    },
-    {
-      title: "Téléchargeur Youtube",
-      description: "Téléchargez des vidéos Youtube",
-      icon: Youtube,
-      color: "bg-blue-50"
-    },
-    {
-      title: "Téléchargeur Tiktok",
-      description: "Téléchargez des vidéos TikTok",
-      icon: Music,
-      color: "bg-gray-50"
-    }
-  ];
+
 
   const tools = [
     {
@@ -65,27 +47,7 @@ export default function AIToolsDashboard() {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="w-full mx-auto">
-        {/* Free Tools Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {freeTools.map((tool, index) => (
-            <div key={index} className={`${tool.color} border border-gray-200 rounded-xl p-5   cursor-pointer`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-white p-2 rounded-lg border border-gray-200">
-                    <tool.icon className="w-5 h-5 text-gray-700" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{tool.title}</h3>
-                    {tool.description && (
-                      <p className="text-sm text-gray-500">{tool.description}</p>
-                    )}
-                  </div>
-                </div>
-                <span className="text-gray-400">→</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        
 
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
