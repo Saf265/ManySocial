@@ -1,18 +1,18 @@
 "use client";
 
 import {
-    ArrowRight,
-    ChevronRight,
-    Command,
-    Files,
-    FolderOpen,
-    Home,
-    LifeBuoy,
-    Search,
-    Settings,
-    Wand2,
-    X,
-    Zap
+  ArrowRight,
+  ChevronRight,
+  Command,
+  Files,
+  FolderOpen,
+  Home,
+  LifeBuoy,
+  Search,
+  Settings,
+  Wand2,
+  X,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ const navItems = [
 ];
 
 const searchableTools = [
+    { name: "ManySocial Shorts", href: "/dashboard/tools/shorts", icon: Zap, category: "Outils" },
     { name: "Amélioration Audio IA", href: "/dashboard/tools/enhance-speech", icon: Wand2, category: "Outils" },
     { name: "Générateur de Voix Off", href: "/dashboard/tools/voiceovers", icon: Wand2, category: "Outils" },
     { name: "Vocal Remover", href: "/dashboard/tools/vocal-remover", icon: Wand2, category: "Outils" },

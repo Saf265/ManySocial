@@ -1,4 +1,4 @@
-import { Mic, MicOff, Video, Volume2, Wand2 } from 'lucide-react';
+import { Mic, MicOff, Video, Volume2, Wand2, Zap } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -34,6 +34,14 @@ export default function AIToolsDashboard() {
       icon: Video,
       preview: "/Video-BG.svg",
       href: "/dashboard/tools/videos"
+    },
+    {
+      title: "ManySocial Shorts",
+      description: "Transformez vos vidéos YouTube en Shorts viraux et monétisables.",
+      icon: Zap,
+      preview: null,
+      href: "/dashboard/tools/shorts",
+      badge: "Beta"
     },
     {
       title: "Suppresseur de Voix IA",

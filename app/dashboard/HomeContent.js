@@ -18,6 +18,14 @@ import Link from "next/link";
 
 const QUICK_TOOLS = [
   {
+    title: "ManySocial Shorts",
+    description: "YouTube en Shorts viraux",
+    icon: Zap,
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    href: "/dashboard/tools/shorts"
+  },
+  {
     title: "Images IA",
     description: "Générateur d'images haute qualité",
     icon: Wand2,

@@ -22,6 +22,7 @@ export const getVideoInfo = (data) => {
       title: data.title || "",
       keywords: keywordsString,
       viewCount: data.viewCount?.toString() || "0",
+      duration: data.duration || data.lengthSeconds || data.length || 0,
     };
   } catch (error) {
     console.error("Error extracting video info:", error);
@@ -113,4 +114,10 @@ export function extractYouTubeId(url) {
 
 
 
+
+
+export function getVideoId(url) {
+  const match = url.match(/v=([^&]+)/) || url.match(/youtu\.be\/([^?]+)/)
+  return match ? match[1] : null
+}
 
